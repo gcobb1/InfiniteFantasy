@@ -1,3 +1,10 @@
+/*****
+
+Author: Gavin Cobb
+Date: February 2020
+
+The purpose of this file is to hold the implementation of the user interface connected to the game logic that is written iin the game loop. Kinematic equations and database storage is involved in many of the algorithms
+*****/
 
 #define OLC_PGE_APPLICATION
 #include "Menu.h"
@@ -9,155 +16,7 @@
 #include <sstream>
 constexpr int32_t nPatch = 8;
 
-class Menu
-{
-public:
-	Menu(){
-	}
-	N::menuobject mo;
-	N::menumanager mm;
-	void CreateMenu(){
-		mo["main"].SetTable(1, 2);
-        	mo["main"]["Play Again"].SetID(101);
- 
-        	mo["main"]["LeaderBoard"].SetID(102);
- 		mo.Build();
-		mm.Open(&mo["main"]);	 
-	}
-	
-};
-
-
-
-
-
-
-
-
-
-
-
-class Barriers
-{
-public:
-	Barriers(){
-	}
-	
-	void DrawBarriers(olc::PixelGameEngine& pge, olc::Sprite* sprGFX2, olc:: vi2d vScreenOffset, int lengthMults){
-	
-		olc::Pixel::Mode currentPixelMode = pge.GetPixelMode();
-		pge.SetPixelMode(olc::Pixel::MASK);
-	
-		olc::vi2d vPatchPos = { 0,0 };
-		int flag = 0;
-		int i = 1;
-		int j = 1;
-		for(vPatchPos.x = 0; vPatchPos.x < vSizeInPatches.x; vPatchPos.x++){
-			for(vPatchPos.y = 0; vPatchPos.y < vSizeInPatches.y; vPatchPos.y++){
-				olc::vi2d vScreenLocation = vPatchPos * nPatch + vScreenOffset;
-				olc::vi2d vSourcePatch = { 0, 0};
-				vSourcePatch.x = vPatchPos.x;
-				vSourcePatch.y = vPatchPos.y;
-				if(vPatchPos.y == 1){
-					for(i = 1; i <= lengthMults; i++){
-						vScreenLocation.y = (vPatchPos.y * nPatch) * i + vScreenOffset.y;
-						pge.DrawPartialSprite(vScreenLocation, sprGFX2, vSourcePatch * nPatch, vPatchSize);
-					}
-					flag = 1;
-				}	
-				else{
-					if(flag == 0){
-						pge.DrawPartialSprite(vScreenLocation, sprGFX2, vSourcePatch * nPatch, vPatchSize);
-					}
-					else if(flag == 1){
-						j = lengthMults + 1;
-						vScreenLocation.y = ((vPatchPos.y * nPatch)/2) * j + vScreenOffset.y;
-						pge.DrawPartialSprite(vScreenLocation, sprGFX2, vSourcePatch * nPatch, vPatchSize);
-					}
-				}
-			}
-		}
-	}
-
-protected:
-	olc::vi2d vSizeInPatches = {12,3};
-	const olc::vi2d vPatchSize = { nPatch, nPatch };
-};
-class flappy
-{
-public:
-	flappy(){
-	}
-
-	void DrawFlappy(olc::PixelGameEngine& pge, olc::Sprite* sprGFX, olc:: vi2d vScreenOffset){
-	
-	
-	olc::Pixel::Mode currentPixelMode = pge.GetPixelMode();
-	pge.SetPixelMode(olc::Pixel::MASK);
-
-	olc::vi2d vPatchPos = { 0,0 };
-	
-	for(vPatchPos.x = 0; vPatchPos.x < vSizeInPatches.x; vPatchPos.x++){
-		
-		for(vPatchPos.y = 0; vPatchPos.y < vSizeInPatches.y; vPatchPos.y++){
-			olc::vi2d vScreenLocation = vPatchPos * nPatch + vScreenOffset;
-			olc::vi2d vSourcePatch = { 0, 0};
-
-			vSourcePatch.x = vPatchPos.x;
-			vSourcePatch.y = vPatchPos.y;
-			pge.DrawPartialSprite(vScreenLocation, sprGFX, vSourcePatch * nPatch, vPatchSize);
-		}
-	}
-}
-protected:
-	olc::vi2d vSizeInPatches = {4,4};
-	const olc::vi2d vPatchSize = { nPatch, nPatch };
-
-
-};
-
-class background
-{
-public:
-background() { }
- 
-void DrawBackground(olc::PixelGameEngine& pge, olc::Sprite* sprGFX4, olc:: vi2d vScreenOffset){
- 
-// Record current pixel mode user is using
-	olc::Pixel::Mode currentPixelMode = pge.GetPixelMode();
-	pge.SetPixelMode(olc::Pixel::MASK);
- 
-// Draw Panel & Border
-	olc::vi2d vPatchPosB = { 0,0 };
-	for (vPatchPosB.x = 0; vPatchPosB.x < vSizeInPatchesB.x; vPatchPosB.x++){
-		for (vPatchPosB.y = 0; vPatchPosB.y < vSizeInPatchesB.y; vPatchPosB.y++){
-			olc::vi2d vScreenLocationB = vPatchPosB * nPatch + vScreenOffset;
-			olc::vi2d vSourcePatchB = { 0, 0};
-                                vSourcePatchB.x = vPatchPosB.x;
- 
-                                vSourcePatchB.y = vPatchPosB.y;
-                        	pge.DrawPartialSprite(vScreenLocationB, sprGFX4, vSourcePatchB * nPatch, vPatchSizeB);
-                	}
-		}
-        }
-protected:
-        olc::vi2d vSizeInPatchesB = { 48, 38 };
-	int32_t nTopVisibleRowB = 0;
-	int32_t nTotalRowsB = 0;
-	const olc::vi2d vPatchSizeB = { nPatch, nPatch };
- 
-};
-// Override base class with your custom functionality
-
-
-
-
-
-
-
-
-
-
+//Create PixelgameEngine object class that defines the interface and game logic
 class olcFlappy : public olc::PixelGameEngine
 {
 public:
@@ -174,6 +33,7 @@ public:
 	flappy flap;
 	Barriers bar;
 	background back;
+	//function that adds score to database
 	void Tofile(){
 		outfile.open("HighScore.txt", std::ios::app);
 		outfile << GetScounter() << std::endl;
@@ -184,7 +44,7 @@ public:
 		return Scounter;
 	}
 
-	
+	//Provides the max score in the database
 	std::string infileMax3(){
 		int max = stoi(Smax2);
 		int max3 = stoi(Smax3);
@@ -216,6 +76,7 @@ public:
 		return std::to_string(max4);
 
 	}
+	//similar to above
 	std::string infileMax2(){
 		int max = stoi(Smax2);
 		int max2 = 0;
@@ -238,6 +99,8 @@ public:
 		infile.close();
 		return std::to_string(max2);
 	}
+
+	//Finds the average score of the database and provides it
 	std::string AverageScore(){
 	int average = 0;
 	std::string Snumber5;
@@ -260,7 +123,8 @@ public:
 
 
 
-	}				
+	}
+	//similar above				
 	std::string infileMax(){
 		int max7 = 0;
 		std::string Snumber;
@@ -276,10 +140,11 @@ public:
 		return std::to_string(max7);
 	}
 public:
+
+	//Construction of sprites, sections, and leaderboards
 	bool OnUserCreate() override
 	{	
 		
-	//	outfile.open("HighScore.txt", std::ios::app);
 		Smax2 = infileMax();
 		Smax3 = infileMax2();
 		Smax4 = infileMax3();
@@ -297,11 +162,11 @@ public:
 		return true;
 	}
 
+	//Game loop
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		//if the game is reset, update to starting positions, velocity, and acceleration, as well as the whole background
 		if(resetGame){
-		//	flag2 = 0;	
-			//Clear(olc::BLACK);
 			
 			flag4 = 0;
 			resetGame = false;
@@ -311,7 +176,6 @@ public:
 			fBirdPosition = 100.0f;
 			
 			fBirdAccel = 0.0f;
-		//	outfile << Scounter << std::endl;
 			Tofile();
 			counter = 0;
 				
@@ -323,28 +187,33 @@ public:
 			nSection = 0;
 			fLevelPosition = 100.0f;
 			command = nullptr;			 
-//			olc::Key::SPACE.bPressed = false;
-		} 
+		}
+		
 		back.DrawBackground(*this, sprGFX4, {0, 0});
+		
+		//Collision detection
 		if(flag4 == 1){		//if collided
 			resetGame = true;
 			
 		}
+		//if no collision
 		if(flag4 == 0){
-		
+		//pressing space changes the acceleration to 0 and the velocity is changed to the opposite direction (upward)	
 		if ((GetKey(olc::Key::SPACE).bPressed) && fBirdVelocity > 10){
 			fBirdAccel = 0.0f;
 			fBirdVelocity = -fGravity / 2.5f;
 		}
+		//otherwise the bird continues to accelerate downward to terminal velocity
 		else{
 			fBirdAccel += fGravity * fElapsedTime;
 			if(fBirdAccel >= fGravity){
 				fBirdAccel = fGravity;
 			}
 		}
+		//Integrate to find velocity and position
 		fBirdVelocity += fBirdAccel * fElapsedTime;
 		fBirdPosition += fBirdVelocity * fElapsedTime;
-		
+		//Barriers positions move at a velocity of -14pixels, integrate for position
 		fLevelPosition += 14.0f * fElapsedTime;
 		if((fLevelPosition + 36) > fSectionWidth * 4){
 			fLevelPosition -= fSectionWidth;
@@ -354,7 +223,7 @@ public:
 			listSection.push_back(highBar);
 
 		}
-
+		//This set is random number generation of barriers heights that are dynamically adjusted for difficulty as the game progresses
 		nSection = 0;
 		for(auto s : listSection){
 			bar.DrawBarriers(*this, sprGFX3, {384 - (int)fLevelPosition + (nSection * 96), 0}, s);
@@ -391,6 +260,7 @@ public:
 						}
 					}
 				}
+				//when you reach the end of the barrier, points are recieved
 				if(384-(int)fLevelPosition + 32 + (nSection * 96) == 133){
 					if(counter == sectionspopped && flag2 == 0){
 						counter++;
@@ -404,34 +274,25 @@ public:
 				
 						
 				
-			
+			//with collision the game ends and the menu screen is held
 			if(flag2 == 1){
 				DrawString(0,150 , "GAME OVER!!", olc::WHITE, 4);
 				score = "Your Score is: " + Scounter;
-				//Smax2 = std::to_string(max2);
-				
+				//leaderboard and menu manipulations
 				Highscore3 = "3. " + Smax4;
 				Highscore = "1. " + Smax2;
 				Highscore2 = "2. " + Smax3;
-			//	DrawString(0, 10, Highscore, olc::RED, 2);
 				DrawString(0, 50, score,olc::WHITE, 2);	
 				men.mm.Draw(*this, sprGFX5, {30, 30});		
 				
 				if(GetKey(olc::Key::UP).bPressed)  men.mm.OnUp();
 				
 				if(GetKey(olc::Key::DOWN).bPressed)  men.mm.OnDown();	
-		//		if(GetKey(olc::Key::LEFT).bPressed)  men.mm.OnLeft();
 
-		//		if(GetKey(olc::Key::RIGHT).bPressed)  men.mm.OnRight();
 				if(GetKey(olc::Key::SPACE).bPressed)  command = men.mm.OnConfirm();
 				if(command != nullptr){
-				//	DrawString(10, 275, std::to_string(command->GetID()), olc::WHITE, 1);
 					ID = command->GetID();
 					if(ID == 101){
-					
-					//flaggerss = OnUserUpdate(fElapsedTime);
-					//	return 0;
-					//	flag4 = 0;
 						flag4 = 1;
 					}
 					else if(ID == 102){
@@ -448,8 +309,8 @@ public:
 			
 			nSection++;
 		}	
-
 		
+		//draw the flappy sprite when it is in different positions
 		if(fBirdVelocity > 0){
 			flap.DrawFlappy(*this, sprGFX2, {133, int(fBirdPosition)});
 		}
@@ -459,8 +320,8 @@ public:
 
 		}
 		}
+		//if leaderboard is chosen go there and when it is exited, save the score and reset.
 		else if(flag4 == 2){
-			//command = nullptr;	
 			stringAve = "average Score: " + Average;
 			DrawString(20, 115, stringAve, olc::RED, 2);
 			DrawString(20, 140, stringer, olc::WHITE, 1);
@@ -469,13 +330,8 @@ public:
 			DrawString(20, 65, Highscore2, olc::RED, 2);
 			DrawString(20, 90, Highscore3, olc::RED, 2);
 			if(GetKey(olc::Key::SPACE).bPressed) flag4 =1;
-		//	}
 			
 		}	
-//		else{
-//			Clear(olc::BLACK);
-//			flag4 = 1;
-//		}
 		return true;
 		
 	}
@@ -513,20 +369,13 @@ protected:
 	std::string stringer = "(Press space to save Score)";
 	std::string stringAve;
 	std::string Average;
-/*	int max7;
-	int number;
-	int number2;
-	int number3;
-	std::Snumber;
-	std::Snumber2;
-	std::Sunumber3*/
 };
 
+//main instantiation of game
 int main()
 {
-	olcFlappy demo;
-	if (demo.Construct(384, 300, 2, 2))
-		demo.Start();
-//	demo.toFile();
-	return 0;
+         olcFlappy demo;
+         if (demo.Construct(384, 300, 2, 2))
+                 demo.Start();
+         return 0;
 }

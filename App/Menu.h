@@ -1,3 +1,11 @@
+/*****
+Author: Gavin Cobb
+Date January 2020
+*****/
+//Creation of a menu that I use for multiple games. This menu allows for the creation and manipulation of the menuobject that is used for the leaderboard
+
+
+
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
@@ -6,7 +14,7 @@ namespace N{
 
 constexpr int32_t nPatch = 8;
 
-
+//menuobject used  to maniuplate menu for leaderboard and game over menu
 class menuobject
 {
 public:
